@@ -1,0 +1,514 @@
+openapi: 3.0.0
+info:
+  title: RESTful API Inventory Management System for Computer Store.
+  description: Created using NodeJs, ExpressJs, and MonggoDB.
+  version: 1.1.0
+servers:
+  - url: http://localhost:3000
+    description: For development server
+  - url: https://week-11-sanhendrindp-production.up.railway.app/
+    description: For public server
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Bearer with JWT token"
+paths:
+  /:
+    get:
+      summary: Root endpoint
+      responses:
+        "200":
+          description: "Welcome message"
+          content:
+            text/plain:
+              schema:
+                type: string
+  /users/signup:
+    post:
+      summary: Create a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+      responses:
+        "201":
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+  /users/login:
+    post:
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Token:
+                    type: string
+        "401":
+          description: Auth failed
+  /users/logout:
+    post:
+      summary: Logout a user
+      responses:
+        "200":
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+  /users:
+    get:
+      security:
+        - bearer: []
+      summary: Get all users
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Count:
+                    type: integer
+                  Users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        email:
+                          type: string
+                        role:
+                          type: string
+  /users/{id}:
+    delete:
+      security:
+        - bearer: []
+      summary: Delete a user by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Result:
+                    type: object
+        "404":
+          description: User not found
+  /users/reset-password:
+    post:
+      summary: Request to reset user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+      responses:
+        "200":
+          description: Password reset key sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+  /users/reset-password/{key}:
+    post:
+      summary: Reset user password using a key
+      parameters:
+        - in: path
+          name: key
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        "200":
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+        "404":
+          description: Invalid key
+  /products:
+    get:
+      summary: Get all products
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Count:
+                    type: integer
+                  Products:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        name:
+                          type: string
+                        price:
+                          type: number
+                        productImage:
+                          type: string
+                        request:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            url:
+                              type: string
+    post:
+      security:
+        - bearer: []
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+      responses:
+        "201":
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Product:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      name:
+                        type: string
+                      price:
+                        type: number
+                      productImage:
+                        type: string
+                      request:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          url:
+                            type: string
+  /products/{id}:
+    get:
+      summary: Get a product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Product:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      name:
+                        type: string
+                      price:
+                        type: number
+                      productImage:
+                        type: string
+                      request:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          url:
+                            type: string
+        "404":
+          description: No product found for provided ID
+    patch:
+      security:
+        - bearer: []
+      summary: Update a product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                price:
+                  type: number
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Product:
+                    type: object
+                    properties:
+                      type:
+                        type: string
+                      url:
+                        type: string
+    delete:
+      security:
+        - bearer: []
+      summary: Delete a product by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Result:
+                    type: object
+  /orders:
+    get:
+      security:
+        - bearer: []
+      summary: Get all orders
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Count:
+                    type: integer
+                  Orders:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        productId:
+                          type: string
+                        quantity:
+                          type: integer
+                        request:
+                          type: object
+                          properties:
+                            type:
+                              type: string
+                            url:
+                              type: string
+    post:
+      security:
+        - bearer: []
+      summary: Create an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productId:
+                  type: string
+                quantity:
+                  type: integer
+      responses:
+        "201":
+          description: Order created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Order:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                      request:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          url:
+                            type: string
+  /orders/{id}:
+    get:
+      security:
+        - bearer: []
+      summary: Get an order by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Order:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                      productId:
+                        type: string
+                      quantity:
+                        type: integer
+                      request:
+                        type: object
+                        properties:
+                          type:
+                            type: string
+                          url:
+                            type: string
+        "404":
+          description: No order found for provided ID
+    delete:
+      security:
+        - bearer: []
+      summary: Delete an order by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Message:
+                    type: string
+                  Result:
+                    type: object
